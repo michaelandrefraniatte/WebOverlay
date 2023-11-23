@@ -195,7 +195,7 @@ namespace WebOverlay
             webView21Chat.Source = new Uri("https://appassets/chat.html");
             webView21Chat.Dock = DockStyle.Fill;
             webView21Chat.DefaultBackgroundColor = Color.Transparent;
-            webView21Chat.NavigationCompleted += WebView21chat_NavigationCompleted;
+            webView21Chat.NavigationCompleted += WebView21Chat_NavigationCompleted;
             this.Controls.Add(webView21Chat);
             webView21Chat.Focus();
             System.Threading.Thread.Sleep(60000);
@@ -217,7 +217,7 @@ namespace WebOverlay
             SetForegroundWindow(window);
             Microsoft.VisualBasic.Interaction.AppActivate(WINDOW_NAME);
         }
-        private async void WebView21chat_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
+        private async void WebView21Chat_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
             if (webView21Chat.Source == new Uri("https://appassets/chat.html"))
             {
