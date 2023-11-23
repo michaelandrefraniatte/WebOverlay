@@ -36,11 +36,28 @@
             }
         }
 
+        img {
+            display: block;
+            position: absolute;
+            width: 399px;
+            height: 250px;
+            left: 1px;
+            top: 550px;
+            border-radius: 0 0 10px 10px;
+        }
+
     </style>
 
 </head>
 
 <body>
+    <img src='' />
+    <script>
+        function setBackground(base64image) {
+            var img = document.getElementsByTagName('img')[0];
+            img.src = 'data:image/jpg;base64, ' + base64image;
+        }
+    </script>
     <div class='wrapper'>Thanks for watching. Thanks to donators: Laurent Viso 50 Euros, Jabol 30 USD, Oswald Ten 20 USD, Olap 20 Euros, Jano 15 Euros, Walda 10 Euros, Jerem 5 USD, Herald 3 Euros. See you soon for next on live videos.</div>
 </body>
 </html>

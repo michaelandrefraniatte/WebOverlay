@@ -1,8 +1,8 @@
-// Page for credits
-credits.html
-// Youtube Data API Key
+// Page for credits and webcam
+creditswebcam.html
+// Youtube data API key
 AIzaSyAbr5dI-jmED0wI2m3Mg6ja7OVmhbNZyJM
 // Channel ID
 UU0f4WJAjYdwl4XYHz-6FhyQ
-// Game window
+// Game window title
 Playcipe

@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using AForge.Video;
+using AForge.Video.DirectShow;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,6 +14,7 @@ using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
 using WebView2 = Microsoft.Web.WebView2.WinForms.WebView2;
+using System.IO;
 
 namespace WebOverlay
 {
@@ -30,12 +34,22 @@ namespace WebOverlay
         public static extern void NtSetTimerResolution(uint DesiredResolution, bool SetResolution, ref uint CurrentResolution);
         public static uint CurrentResolution = 0;
         public static int x, y;
-        public WebView2 webView21credits = new WebView2();
+        public WebView2 webView21CreditsWebcam = new WebView2();
         private static int width = Screen.PrimaryScreen.Bounds.Width;
         private static int height = Screen.PrimaryScreen.Bounds.Height;
         private static string page;
         public static WebView2 webView21chat = new WebView2();
         private static string apikey, channelid, game;
+        public static Image img;
+        private FilterInfoCollection CaptureDevice;
+        private VideoCaptureDevice FinalFrame;
+        private VideoCapabilities[] videoCapabilities;
+        private static bool getstate = false;
+        private static double ratio;
+        private static string base64image;
+        public WebView2 webView21 = new WebView2();
+        private ImageCodecInfo jpegEncoder;
+        private EncoderParameters encoderParameters;
         public static int[] wd = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
         public static int[] wu = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
         public static bool[] ws = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
@@ -78,13 +92,13 @@ namespace WebOverlay
             }
             CoreWebView2EnvironmentOptions options = new CoreWebView2EnvironmentOptions("--disable-web-security", "--allow-file-access-from-files", "--allow-file-access");
             CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(null, null, options);
-            await webView21credits.EnsureCoreWebView2Async(environment);
-            webView21credits.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
-            webView21credits.CoreWebView2.Settings.AreDevToolsEnabled = false;
-            webView21credits.Source = new Uri("https://appassets/" + page);
-            webView21credits.Dock = DockStyle.Fill;
-            webView21credits.DefaultBackgroundColor = Color.Transparent;
-            this.Controls.Add(webView21credits);
+            await webView21CreditsWebcam.EnsureCoreWebView2Async(environment);
+            webView21CreditsWebcam.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
+            webView21CreditsWebcam.CoreWebView2.Settings.AreDevToolsEnabled = false;
+            webView21CreditsWebcam.Source = new Uri("https://appassets/" + page);
+            webView21CreditsWebcam.Dock = DockStyle.Fill;
+            webView21CreditsWebcam.DefaultBackgroundColor = Color.Transparent;
+            this.Controls.Add(webView21CreditsWebcam);
             await webView21chat.EnsureCoreWebView2Async(environment);
             webView21chat.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
             webView21chat.CoreWebView2.Settings.AreDevToolsEnabled = true;
@@ -102,10 +116,74 @@ namespace WebOverlay
                 webView21chat.ExecuteScriptAsync("getLoadPage('apikey', 'channelid');".Replace("apikey", apikey).Replace("channelid", channelid)).ConfigureAwait(false);
             }
         }
-        private async Task<String> execScriptHelper(String script)
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            jpegEncoder = ImageCodecInfo.GetImageDecoders().First(c => c.FormatID == ImageFormat.Jpeg.Guid);
+            encoderParameters = new EncoderParameters(1);
+            encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Compression, 255);
+            CaptureDevice = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            FinalFrame = new VideoCaptureDevice(CaptureDevice[0].MonikerString);
+            videoCapabilities = FinalFrame.VideoCapabilities;
+            FinalFrame.VideoResolution = videoCapabilities[videoCapabilities.Length - 1];
+            ratio = Convert.ToDouble(FinalFrame.VideoResolution.FrameSize.Width) / Convert.ToDouble(FinalFrame.VideoResolution.FrameSize.Height);
+            height = 300;
+            width = (int)(height * ratio);
+            FinalFrame.NewFrame += FinalFrame_NewFrame;
+            FinalFrame.Start();
+        }
+        private async Task<String> execScriptHelperChat(String script)
         {
             var x = await webView21chat.ExecuteScriptAsync(script).ConfigureAwait(false);
             return x;
+        }
+        private async Task<String> execScriptHelperCreditsWebcam(String script)
+        {
+            var x = await webView21CreditsWebcam.ExecuteScriptAsync(script).ConfigureAwait(false);
+            return x;
+        }
+        public static Bitmap ImageToGrayScale(Bitmap Bmp)
+        {
+            Bitmap newBitmap = new Bitmap(Bmp.Width, Bmp.Height);
+            Graphics g = Graphics.FromImage(newBitmap);
+            ColorMatrix colorMatrix = new ColorMatrix(
+               new float[][]
+              {
+                 new float[] {.3f, .3f, .3f, 0, 0},
+                 new float[] {.59f, .59f, .59f, 0, 0},
+                 new float[] {.11f, .11f, .11f, 0, 0},
+                 new float[] {0, 0, 0, 1, 0},
+                 new float[] {0, 0, 0, 0, 1}
+              });
+            ImageAttributes attributes = new ImageAttributes();
+            attributes.SetColorMatrix(colorMatrix);
+            g.DrawImage(Bmp, new Rectangle(0, 0, Bmp.Width, Bmp.Height), 0, 0, Bmp.Width, Bmp.Height, GraphicsUnit.Pixel, attributes);
+            g.Dispose();
+            return newBitmap;
+        }
+        public byte[] ImageToByteArray(Bitmap image)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                image.Save(ms, jpegEncoder, encoderParameters);
+                return ms.ToArray();
+            }
+        }
+        void FinalFrame_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        {
+            img = (Bitmap)eventArgs.Frame.Clone();
+        }
+        private async void timer3_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                Bitmap bmp = new Bitmap(img);
+                bmp = new Bitmap(bmp, new Size(bmp.Width / 2, bmp.Height / 2));
+                bmp = ImageToGrayScale(bmp);
+                byte[] imageArray = ImageToByteArray(bmp);
+                base64image = Convert.ToBase64String(imageArray);
+                await execScriptHelperCreditsWebcam($"setBackground('{base64image.ToString()}');");
+            }
+            catch { }
         }
         private async void timer2_Tick(object sender, EventArgs e)
         {
@@ -340,7 +418,7 @@ namespace WebOverlay
                         catch { }
                     }
                     ";
-                await execScriptHelper(stringinject);
+                await execScriptHelperChat(stringinject);
             }
             catch { }
             try
@@ -353,7 +431,7 @@ namespace WebOverlay
                     </style>`;
                     document.getElementsByTagName('head')[0].innerHTML += style;
                     ";
-                await execScriptHelper(stringinject);
+                await execScriptHelperChat(stringinject);
             }
             catch { }
         }
@@ -376,8 +454,19 @@ namespace WebOverlay
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            webView21credits.Dispose();
+            webView21CreditsWebcam.Dispose();
             webView21chat.Dispose();
+        }
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            try
+            {
+                FinalFrame.NewFrame -= FinalFrame_NewFrame;
+                System.Threading.Thread.Sleep(1000);
+                if (FinalFrame.IsRunning)
+                    FinalFrame.Stop();
+            }
+            catch { }
         }
     }
     [ClassInterface(ClassInterfaceType.AutoDual)]
