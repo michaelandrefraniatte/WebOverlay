@@ -67,7 +67,7 @@ namespace WebOverlay
         private static int width = Screen.PrimaryScreen.Bounds.Width;
         private static int height = Screen.PrimaryScreen.Bounds.Height;
         private static string page;
-        public static WebView2 webView21chat = new WebView2();
+        public static WebView2 webView21Chat = new WebView2();
         private static string apikey, channelid, game;
         public static Image img;
         private FilterInfoCollection CaptureDevice;
@@ -188,17 +188,17 @@ namespace WebOverlay
             webView21CreditsWebcam.DefaultBackgroundColor = Color.Transparent;
             this.Controls.Add(webView21CreditsWebcam);
             webView21CreditsWebcam.Focus();
-            await webView21chat.EnsureCoreWebView2Async(environment);
-            webView21chat.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
-            webView21chat.CoreWebView2.Settings.AreDevToolsEnabled = true;
-            webView21chat.CoreWebView2.AddHostObjectToScript("bridge", new Bridge());
-            webView21chat.Source = new Uri("https://appassets/chat.html");
-            webView21chat.Dock = DockStyle.Fill;
-            webView21chat.DefaultBackgroundColor = Color.Transparent;
-            webView21chat.NavigationCompleted += WebView21chat_NavigationCompleted;
-            this.Controls.Add(webView21chat);
-            webView21chat.Focus();
-            System.Threading.Thread.Sleep(20000);
+            await webView21Chat.EnsureCoreWebView2Async(environment);
+            webView21Chat.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
+            webView21Chat.CoreWebView2.Settings.AreDevToolsEnabled = true;
+            webView21Chat.CoreWebView2.AddHostObjectToScript("bridge", new Bridge());
+            webView21Chat.Source = new Uri("https://appassets/chat.html");
+            webView21Chat.Dock = DockStyle.Fill;
+            webView21Chat.DefaultBackgroundColor = Color.Transparent;
+            webView21Chat.NavigationCompleted += WebView21chat_NavigationCompleted;
+            this.Controls.Add(webView21Chat);
+            webView21Chat.Focus();
+            System.Threading.Thread.Sleep(60000);
             pictureBox2.Image.Dispose();
             pictureBox2.Image = null;
             this.Controls.Remove(this.pictureBox2);
@@ -219,9 +219,9 @@ namespace WebOverlay
         }
         private async void WebView21chat_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
-            if (webView21chat.Source == new Uri("https://appassets/chat.html"))
+            if (webView21Chat.Source == new Uri("https://appassets/chat.html"))
             {
-                webView21chat.ExecuteScriptAsync("getLoadPage('apikey', 'channelid');".Replace("apikey", apikey).Replace("channelid", channelid)).ConfigureAwait(false);
+                webView21Chat.ExecuteScriptAsync("getLoadPage('apikey', 'channelid');".Replace("apikey", apikey).Replace("channelid", channelid)).ConfigureAwait(false);
             }
         }
         private void Form1_Shown(object sender, EventArgs e)
@@ -241,7 +241,7 @@ namespace WebOverlay
         }
         private async Task<String> execScriptHelperChat(String script)
         {
-            var x = await webView21chat.ExecuteScriptAsync(script).ConfigureAwait(false);
+            var x = await webView21Chat.ExecuteScriptAsync(script).ConfigureAwait(false);
             return x;
         }
         private async Task<String> execScriptHelperCreditsWebcam(String script)
@@ -788,8 +788,11 @@ namespace WebOverlay
             {
                 string stringinject = @"
                     var style = `<style>
-                        html {
+                        body, html {
                             background-color: transparent !important;
+                        }
+                        * {
+                            background-color: black !important;
                         }
                     </style>`;
                     document.getElementsByTagName('head')[0].innerHTML += style;
@@ -813,7 +816,8 @@ namespace WebOverlay
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             webView21CreditsWebcam.Dispose();
-            webView21chat.Dispose();
+            webView21Chat.Dispose();
+            webView21Controller.Dispose();
         }
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -836,7 +840,7 @@ namespace WebOverlay
         public static string txt;
         public string LoadPage(string param)
         {
-            Form1.webView21chat.ExecuteScriptAsync("reLoadPlayer();").ConfigureAwait(false);
+            Form1.webView21Chat.ExecuteScriptAsync("reLoadPlayer();").ConfigureAwait(false);
             return param;
         }
     }
