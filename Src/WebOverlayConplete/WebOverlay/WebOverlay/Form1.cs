@@ -27,6 +27,33 @@ namespace WebOverlay
             InitializeComponent();
         }
         [DllImport("user32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        [DllImport("USER32.DLL")]
+        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong);
+        [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
+        static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
+        [DllImport("user32.dll")]
+        static extern bool DrawMenuBar(IntPtr hWnd);
+        [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
+        public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")]
+        static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+        private static string WINDOW_NAME = "";
+        private const int GWL_STYLE = -16;
+        private const uint WS_BORDER = 0x00800000;
+        private const uint WS_CAPTION = 0x00C00000;
+        private const uint WS_SYSMENU = 0x00080000;
+        private const uint WS_MINIMIZEBOX = 0x00020000;
+        private const uint WS_MAXIMIZEBOX = 0x00010000;
+        private const uint WS_OVERLAPPED = 0x00000000;
+        private const uint WS_POPUP = 0x80000000;
+        private const uint WS_TABSTOP = 0x00010000;
+        private const uint WS_VISIBLE = 0x10000000;
+        [DllImport("user32.dll")]
         public static extern bool GetAsyncKeyState(System.Windows.Forms.Keys vKey);
         [DllImport("winmm.dll", EntryPoint = "timeBeginPeriod")]
         public static extern uint TimeBeginPeriod(uint ms);
@@ -119,11 +146,15 @@ namespace WebOverlay
                 file.ReadLine();
                 game = file.ReadLine();
             }
-            CoreWebView2EnvironmentOptions options = new CoreWebView2EnvironmentOptions("--disable-web-security", "--allow-file-access-from-files", "--allow-file-access");
-            CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(null, null, options);
+            this.pictureBox2.SizeMode = PictureBoxSizeMode.CenterImage;
             this.pictureBox1.Size = new Size(400, 200);
             this.pictureBox1.Location = new Point(750, 600);
             this.pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+        }
+        private async void Start()
+        {
+            CoreWebView2EnvironmentOptions options = new CoreWebView2EnvironmentOptions("--disable-web-security", "--allow-file-access-from-files", "--allow-file-access");
+            CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(null, null, options);
             await webView21Controller.EnsureCoreWebView2Async(environment);
             webView21Controller.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
             webView21Controller.CoreWebView2.Settings.AreDevToolsEnabled = true;
@@ -167,6 +198,24 @@ namespace WebOverlay
             webView21chat.NavigationCompleted += WebView21chat_NavigationCompleted;
             this.Controls.Add(webView21chat);
             webView21chat.Focus();
+            System.Threading.Thread.Sleep(20000);
+            pictureBox2.Image.Dispose();
+            pictureBox2.Image = null;
+            this.Controls.Remove(this.pictureBox2);
+            WINDOW_NAME = game;
+            IntPtr window = FindWindowByCaption(IntPtr.Zero, WINDOW_NAME);
+            SetWindowLong(window, GWL_STYLE, WS_SYSMENU);
+            SetWindowPos(window, -2, 420, 1, 1090, 600, 0x0040);
+            DrawMenuBar(window);
+            ShowWindow(window, 9);
+            SetForegroundWindow(window);
+            Microsoft.VisualBasic.Interaction.AppActivate(WINDOW_NAME);
+            SetWindowLong(window, GWL_STYLE, WS_SYSMENU);
+            SetWindowPos(window, -2, 420, 1, 1090, 600, 0x0040);
+            DrawMenuBar(window);
+            ShowWindow(window, 9);
+            SetForegroundWindow(window);
+            Microsoft.VisualBasic.Interaction.AppActivate(WINDOW_NAME);
         }
         private async void WebView21chat_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
@@ -751,19 +800,14 @@ namespace WebOverlay
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            valchanged(0, GetAsyncKeyState(Keys.PageUp));
+            valchanged(0, GetAsyncKeyState(Keys.Add));
             if (wd[0] == 1)
             {
-                this.TopMost = false;
-            }
-            valchanged(1, GetAsyncKeyState(Keys.PageDown));
-            if (wd[1] == 1)
-            {
-                width = Screen.PrimaryScreen.Bounds.Width;
-                height = Screen.PrimaryScreen.Bounds.Height;
-                this.Size = new Size(width, height);
-                this.Location = new Point(0, 0);
-                this.TopMost = true;
+                if (!getstate)
+                {
+                    Start();
+                    getstate = true;
+                }
             }
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
