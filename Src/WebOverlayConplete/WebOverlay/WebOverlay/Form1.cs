@@ -147,8 +147,8 @@ namespace WebOverlay
                 game = file.ReadLine();
             }
             this.pictureBox2.SizeMode = PictureBoxSizeMode.CenterImage;
-            this.pictureBox1.Size = new Size(400, 200);
-            this.pictureBox1.Location = new Point(750, 600);
+            this.pictureBox1.Size = new Size(400, 190);
+            this.pictureBox1.Location = new Point(750, 630);
             this.pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
         }
         private async void Start()
@@ -157,7 +157,8 @@ namespace WebOverlay
             CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(null, null, options);
             await webView21Controller.EnsureCoreWebView2Async(environment);
             webView21Controller.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
-            webView21Controller.CoreWebView2.Settings.AreDevToolsEnabled = true;
+            webView21Controller.CoreWebView2.Settings.AreDevToolsEnabled = false;
+            webView21Controller.CoreWebView2.Settings.IsStatusBarEnabled = false;
             webView21Controller.Source = new Uri("https://appassets/controller.html");
             webView21Controller.Dock = DockStyle.Fill;
             webView21Controller.DefaultBackgroundColor = Color.Transparent;
@@ -183,6 +184,7 @@ namespace WebOverlay
             await webView21CreditsWebcam.EnsureCoreWebView2Async(environment);
             webView21CreditsWebcam.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
             webView21CreditsWebcam.CoreWebView2.Settings.AreDevToolsEnabled = false;
+            webView21CreditsWebcam.CoreWebView2.Settings.IsStatusBarEnabled = false;
             webView21CreditsWebcam.Source = new Uri("https://appassets/" + page);
             webView21CreditsWebcam.Dock = DockStyle.Fill;
             webView21CreditsWebcam.DefaultBackgroundColor = Color.Transparent;
@@ -190,7 +192,8 @@ namespace WebOverlay
             webView21CreditsWebcam.Focus();
             await webView21Chat.EnsureCoreWebView2Async(environment);
             webView21Chat.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
-            webView21Chat.CoreWebView2.Settings.AreDevToolsEnabled = true;
+            webView21Chat.CoreWebView2.Settings.AreDevToolsEnabled = false;
+            webView21Chat.CoreWebView2.Settings.IsStatusBarEnabled = false;
             webView21Chat.CoreWebView2.AddHostObjectToScript("bridge", new Bridge());
             webView21Chat.Source = new Uri("https://appassets/chat.html");
             webView21Chat.Dock = DockStyle.Fill;
@@ -198,9 +201,13 @@ namespace WebOverlay
             webView21Chat.NavigationCompleted += WebView21Chat_NavigationCompleted;
             this.Controls.Add(webView21Chat);
             webView21Chat.Focus();
-            System.Threading.Thread.Sleep(60000);
-            pictureBox2.Image.Dispose();
-            pictureBox2.Image = null;
+            Task.Run(() => ShowStream());
+        }
+        private void ShowStream()
+        {
+            System.Threading.Thread.Sleep(20000);
+            this.pictureBox2.Image.Dispose();
+            this.pictureBox2.Image = null;
             this.Controls.Remove(this.pictureBox2);
             WINDOW_NAME = game;
             IntPtr window = FindWindowByCaption(IntPtr.Zero, WINDOW_NAME);
@@ -253,11 +260,6 @@ namespace WebOverlay
         {
             var x = await webView21Controller.ExecuteScriptAsync(script).ConfigureAwait(false);
             return x;
-        }
-        private static double Scale(double value, double min, double max, double minScale, double maxScale)
-        {
-            double scaled = minScale + (double)(value - min) / (max - min) * (maxScale - minScale);
-            return scaled;
         }
         public async void SetController(bool Controller1ButtonAPressed, bool Controller1ButtonBPressed, bool Controller1ButtonXPressed, bool Controller1ButtonYPressed, bool Controller1ButtonStartPressed, bool Controller1ButtonBackPressed, bool Controller1ButtonDownPressed, bool Controller1ButtonUpPressed, bool Controller1ButtonLeftPressed, bool Controller1ButtonRightPressed, bool Controller1ButtonShoulderLeftPressed, bool Controller1ButtonShoulderRightPressed, bool Controller1ThumbpadLeftPressed, bool Controller1ThumbpadRightPressed, double Controller1TriggerLeftPosition, double Controller1TriggerRightPosition, double Controller1ThumbLeftX, double Controller1ThumbLeftY, double Controller1ThumbRightX, double Controller1ThumbRightY)
         {
@@ -540,7 +542,7 @@ namespace WebOverlay
             try
             {
                 Bitmap bmp = new Bitmap(img);
-                bmp = new Bitmap(bmp, new Size(bmp.Width / 2, bmp.Height / 2));
+                bmp = new Bitmap(bmp, new Size(bmp.Width / 4, bmp.Height / 4));
                 bmp = ImageToGrayScale(bmp);
                 byte[] imageArray = ImageToByteArray(bmp);
                 base64image = Convert.ToBase64String(imageArray);
