@@ -13,6 +13,7 @@ using Microsoft.Web.WebView2.Core;
 using WebView2 = Microsoft.Web.WebView2.WinForms.WebView2;
 using System.IO;
 using SharpDX.XInput;
+using System.Threading;
 
 namespace WebOverlay
 {
@@ -59,12 +60,14 @@ namespace WebOverlay
         public static extern void NtSetTimerResolution(uint DesiredResolution, bool SetResolution, ref uint CurrentResolution);
         public static uint CurrentResolution = 0;
         public static int x, y;
+        private static ThreadStart threadstart;
+        private static Thread thread;
         public WebView2 webView21CreditsWebcamController = new WebView2();
         private static int width = Screen.PrimaryScreen.Bounds.Width;
         private static int height = Screen.PrimaryScreen.Bounds.Height;
         private static string page;
         public static WebView2 webView21Chat = new WebView2();
-        private static string apikey, channelid, game;
+        private static string apikey, channelid;
         public static Image img;
         private FilterInfoCollection CaptureDevice;
         private VideoCaptureDevice FinalFrame;
@@ -128,9 +131,9 @@ namespace WebOverlay
         {
             TimeBeginPeriod(1);
             NtSetTimerResolution(1, true, ref CurrentResolution);
+            this.pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
             this.Size = new Size(width, height);
             this.Location = new Point(0, 0);
-            this.Opacity = 0.60f;
             using (System.IO.StreamReader file = new System.IO.StreamReader("params.txt"))
             {
                 file.ReadLine();
@@ -139,8 +142,6 @@ namespace WebOverlay
                 apikey = file.ReadLine();
                 file.ReadLine();
                 channelid = file.ReadLine();
-                file.ReadLine();
-                game = file.ReadLine();
             }
         }
         private async void Start()
@@ -185,6 +186,19 @@ namespace WebOverlay
             webView21Chat.NavigationCompleted += WebView21Chat_NavigationCompleted;
             this.Controls.Add(webView21Chat);
             webView21Chat.Focus();
+            threadstart = new ThreadStart(ShowStream);
+            thread = new Thread(threadstart);
+            thread.Start();
+        }
+        private void ShowStream()
+        {
+            System.Threading.Thread.Sleep(20000);
+            this.Opacity = 0.60f;
+            this.pictureBox1.BackColor = Color.Magenta;
+            this.pictureBox1.Image.Dispose();
+            this.pictureBox1.Image = null;
+            this.Controls.Remove(this.pictureBox1);
+            this.pictureBox1.Dispose();
         }
         private async void WebView21Chat_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {

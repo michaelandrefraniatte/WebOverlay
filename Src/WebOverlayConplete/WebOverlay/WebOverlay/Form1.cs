@@ -17,6 +17,7 @@ using WebView2 = Microsoft.Web.WebView2.WinForms.WebView2;
 using System.IO;
 using SharpDX.XInput;
 using static System.Windows.Forms.AxHost;
+using System.Threading;
 
 namespace WebOverlay
 {
@@ -63,6 +64,8 @@ namespace WebOverlay
         public static extern void NtSetTimerResolution(uint DesiredResolution, bool SetResolution, ref uint CurrentResolution);
         public static uint CurrentResolution = 0;
         public static int x, y;
+        private static ThreadStart threadstart;
+        private static Thread thread;
         public WebView2 webView21CreditsWebcam = new WebView2();
         private static int width = Screen.PrimaryScreen.Bounds.Width;
         private static int height = Screen.PrimaryScreen.Bounds.Height;
@@ -201,7 +204,9 @@ namespace WebOverlay
             webView21Chat.NavigationCompleted += WebView21Chat_NavigationCompleted;
             this.Controls.Add(webView21Chat);
             webView21Chat.Focus();
-            Task.Run(() => ShowStream());
+            threadstart = new ThreadStart(ShowStream);
+            thread = new Thread(threadstart);
+            thread.Start();
         }
         private void ShowStream()
         {
@@ -209,6 +214,7 @@ namespace WebOverlay
             this.pictureBox2.Image.Dispose();
             this.pictureBox2.Image = null;
             this.Controls.Remove(this.pictureBox2);
+            this.pictureBox2.Dispose();
             WINDOW_NAME = game;
             IntPtr window = FindWindowByCaption(IntPtr.Zero, WINDOW_NAME);
             SetWindowLong(window, GWL_STYLE, WS_SYSMENU);
