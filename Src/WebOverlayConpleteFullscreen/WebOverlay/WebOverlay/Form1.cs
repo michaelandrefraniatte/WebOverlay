@@ -166,15 +166,6 @@ namespace WebOverlay
             catch { }
             CoreWebView2EnvironmentOptions options = new CoreWebView2EnvironmentOptions("--disable-web-security", "--allow-file-access-from-files", "--allow-file-access");
             CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(null, null, options);
-            await webView21CreditsWebcamController.EnsureCoreWebView2Async(environment);
-            webView21CreditsWebcamController.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
-            webView21CreditsWebcamController.CoreWebView2.Settings.AreDevToolsEnabled = false;
-            webView21CreditsWebcamController.CoreWebView2.Settings.IsStatusBarEnabled = false;
-            webView21CreditsWebcamController.Source = new Uri("https://appassets/" + page);
-            webView21CreditsWebcamController.Dock = DockStyle.Fill;
-            webView21CreditsWebcamController.DefaultBackgroundColor = Color.Transparent;
-            this.Controls.Add(webView21CreditsWebcamController);
-            webView21CreditsWebcamController.Focus();
             await webView21Chat.EnsureCoreWebView2Async(environment);
             webView21Chat.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
             webView21Chat.CoreWebView2.Settings.AreDevToolsEnabled = false;
@@ -186,9 +177,29 @@ namespace WebOverlay
             webView21Chat.NavigationCompleted += WebView21Chat_NavigationCompleted;
             this.Controls.Add(webView21Chat);
             webView21Chat.Focus();
-            threadstart = new ThreadStart(ShowStream);
-            thread = new Thread(threadstart);
-            thread.Start();
+            if (File.Exists(Application.StartupPath + @"\WebOverlay.exe.WebView2\EBWebView\Local State"))
+            {
+                await webView21CreditsWebcamController.EnsureCoreWebView2Async(environment);
+                webView21CreditsWebcamController.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
+                webView21CreditsWebcamController.CoreWebView2.Settings.AreDevToolsEnabled = false;
+                webView21CreditsWebcamController.CoreWebView2.Settings.IsStatusBarEnabled = false;
+                webView21CreditsWebcamController.Source = new Uri("https://appassets/" + page);
+                webView21CreditsWebcamController.Dock = DockStyle.Fill;
+                webView21CreditsWebcamController.DefaultBackgroundColor = Color.Transparent;
+                this.Controls.Add(webView21CreditsWebcamController);
+                webView21CreditsWebcamController.Focus();
+                threadstart = new ThreadStart(ShowStream);
+                thread = new Thread(threadstart);
+                thread.Start();
+            }
+            else
+            {
+                this.TransparencyKey = Color.Empty;
+                this.pictureBox1.Image.Dispose();
+                this.pictureBox1.Image = null;
+                this.Controls.Remove(this.pictureBox1);
+                this.pictureBox1.Dispose();
+            }
         }
         private void ShowStream()
         {
@@ -539,9 +550,11 @@ namespace WebOverlay
         }
         private async void timer2_Tick(object sender, EventArgs e)
         {
-            try
+            if (File.Exists(Application.StartupPath + @"\WebOverlay.exe.WebView2\EBWebView\Local State"))
             {
-                string stringinject = @"
+                try
+                {
+                    string stringinject = @"
                     if (window.location.href.indexOf('youtube') > -1 | window.location.href.indexOf('youtu.be') > -1) {
                         try {
                             var playButton = document.querySelector('.ytp-large-play-button:visible');
@@ -770,9 +783,10 @@ namespace WebOverlay
                         catch { }
                     }
                     ";
-                await execScriptHelperChat(stringinject);
+                    await execScriptHelperChat(stringinject);
+                }
+                catch { }
             }
-            catch { }
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
