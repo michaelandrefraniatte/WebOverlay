@@ -1,5 +1,5 @@
-// Page for credits and webcam
-creditswebcam.html
+// Page for credits and webcam and controller
+creditswebcamcontroller.html
 // Youtube data API key
 AIzaSyAbr5dI-jmED0wI2m3Mg6ja7OVmhbNZyJM
 // Channel ID

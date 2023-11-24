@@ -66,7 +66,7 @@ namespace WebOverlay
         public static int x, y;
         private static ThreadStart threadstart;
         private static Thread thread;
-        public WebView2 webView21CreditsWebcam = new WebView2();
+        public WebView2 webView21CreditsWebcamController = new WebView2();
         private static int width = Screen.PrimaryScreen.Bounds.Width;
         private static int height = Screen.PrimaryScreen.Bounds.Height;
         private static string page;
@@ -82,7 +82,6 @@ namespace WebOverlay
         private ImageCodecInfo jpegEncoder;
         private EncoderParameters encoderParameters;
         public static bool closed = false;
-        public WebView2 webView21Controller = new WebView2();
         public static List<double> List_A = new List<double>(), List_B = new List<double>(), List_X = new List<double>(), List_Y = new List<double>(), List_LB = new List<double>(), List_RB = new List<double>(), List_LT = new List<double>(), List_RT = new List<double>(), List_MAP = new List<double>(), List_MENU = new List<double>(), List_LSTICK = new List<double>(), List_RSTICK = new List<double>(), List_DU = new List<double>(), List_DD = new List<double>(), List_DL = new List<double>(), List_DR = new List<double>(), List_XBOX = new List<double>();
         public static bool Controller_A, Controller_B, Controller_X, Controller_Y, Controller_LB, Controller_RB, Controller_MAP, Controller_MENU, Controller_LSTICK, Controller_RSTICK, Controller_DU, Controller_DD, Controller_DL, Controller_DR, Controller_XBOX;
         public static double Controller_LT, Controller_RT, Controller_LX, Controller_LY, Controller_RX, Controller_RY;
@@ -149,23 +148,10 @@ namespace WebOverlay
                 file.ReadLine();
                 game = file.ReadLine();
             }
-            this.pictureBox2.SizeMode = PictureBoxSizeMode.CenterImage;
-            this.pictureBox1.Size = new Size(400, 190);
-            this.pictureBox1.Location = new Point(750, 630);
             this.pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
         }
         private async void Start()
         {
-            CoreWebView2EnvironmentOptions options = new CoreWebView2EnvironmentOptions("--disable-web-security", "--allow-file-access-from-files", "--allow-file-access");
-            CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(null, null, options);
-            await webView21Controller.EnsureCoreWebView2Async(environment);
-            webView21Controller.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
-            webView21Controller.CoreWebView2.Settings.AreDevToolsEnabled = false;
-            webView21Controller.CoreWebView2.Settings.IsStatusBarEnabled = false;
-            webView21Controller.Source = new Uri("https://appassets/controller.html");
-            webView21Controller.Dock = DockStyle.Fill;
-            webView21Controller.DefaultBackgroundColor = Color.Transparent;
-            this.pictureBox1.Controls.Add(webView21Controller);
             try
             {
                 var controllers = new[] { new Controller(UserIndex.One) };
@@ -184,15 +170,17 @@ namespace WebOverlay
                 }
             }
             catch { }
-            await webView21CreditsWebcam.EnsureCoreWebView2Async(environment);
-            webView21CreditsWebcam.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
-            webView21CreditsWebcam.CoreWebView2.Settings.AreDevToolsEnabled = false;
-            webView21CreditsWebcam.CoreWebView2.Settings.IsStatusBarEnabled = false;
-            webView21CreditsWebcam.Source = new Uri("https://appassets/" + page);
-            webView21CreditsWebcam.Dock = DockStyle.Fill;
-            webView21CreditsWebcam.DefaultBackgroundColor = Color.Transparent;
-            this.Controls.Add(webView21CreditsWebcam);
-            webView21CreditsWebcam.Focus();
+            CoreWebView2EnvironmentOptions options = new CoreWebView2EnvironmentOptions("--disable-web-security", "--allow-file-access-from-files", "--allow-file-access");
+            CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(null, null, options);
+            await webView21CreditsWebcamController.EnsureCoreWebView2Async(environment);
+            webView21CreditsWebcamController.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
+            webView21CreditsWebcamController.CoreWebView2.Settings.AreDevToolsEnabled = false;
+            webView21CreditsWebcamController.CoreWebView2.Settings.IsStatusBarEnabled = false;
+            webView21CreditsWebcamController.Source = new Uri("https://appassets/" + page);
+            webView21CreditsWebcamController.Dock = DockStyle.Fill;
+            webView21CreditsWebcamController.DefaultBackgroundColor = Color.Transparent;
+            this.Controls.Add(webView21CreditsWebcamController);
+            webView21CreditsWebcamController.Focus();
             await webView21Chat.EnsureCoreWebView2Async(environment);
             webView21Chat.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
             webView21Chat.CoreWebView2.Settings.AreDevToolsEnabled = false;
@@ -211,20 +199,24 @@ namespace WebOverlay
         private void ShowStream()
         {
             System.Threading.Thread.Sleep(20000);
-            this.pictureBox2.Image.Dispose();
-            this.pictureBox2.Image = null;
-            this.Controls.Remove(this.pictureBox2);
-            this.pictureBox2.Dispose();
+            this.pictureBox1.Image.Dispose();
+            this.pictureBox1.Image = null;
+            this.Controls.Remove(this.pictureBox1);
+            this.pictureBox1.Dispose();
+            int px = Screen.PrimaryScreen.Bounds.Width * 28 / 100;
+            int py = 1;
+            int lx = Screen.PrimaryScreen.Bounds.Width * 70 / 100;
+            int ly = Screen.PrimaryScreen.Bounds.Width * 70 / 100 * 9 / 16;
             WINDOW_NAME = game;
             IntPtr window = FindWindowByCaption(IntPtr.Zero, WINDOW_NAME);
             SetWindowLong(window, GWL_STYLE, WS_SYSMENU);
-            SetWindowPos(window, -2, 420, 1, 1090, 600, 0x0040);
+            SetWindowPos(window, -2, px, py, lx, ly, 0x0040);
             DrawMenuBar(window);
             ShowWindow(window, 9);
             SetForegroundWindow(window);
             Microsoft.VisualBasic.Interaction.AppActivate(WINDOW_NAME);
             SetWindowLong(window, GWL_STYLE, WS_SYSMENU);
-            SetWindowPos(window, -2, 420, 1, 1090, 600, 0x0040);
+            SetWindowPos(window, -2, px, py, lx, ly, 0x0040);
             DrawMenuBar(window);
             ShowWindow(window, 9);
             SetForegroundWindow(window);
@@ -236,6 +228,22 @@ namespace WebOverlay
             {
                 webView21Chat.ExecuteScriptAsync("getLoadPage('apikey', 'channelid');".Replace("apikey", apikey).Replace("channelid", channelid)).ConfigureAwait(false);
             }
+            try
+            {
+                string stringinject = @"
+                    var style = `<style>
+                        body, html {
+                            background-color: transparent !important;
+                        }
+                        * {
+                            background-color: black !important;
+                        }
+                    </style>`;
+                    document.getElementsByTagName('head')[0].innerHTML += style;
+                    ";
+                await execScriptHelperChat(stringinject);
+            }
+            catch { }
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
@@ -257,14 +265,9 @@ namespace WebOverlay
             var x = await webView21Chat.ExecuteScriptAsync(script).ConfigureAwait(false);
             return x;
         }
-        private async Task<String> execScriptHelperCreditsWebcam(String script)
+        private async Task<String> execScriptHelperCreditsWebcamController(String script)
         {
-            var x = await webView21CreditsWebcam.ExecuteScriptAsync(script).ConfigureAwait(false);
-            return x;
-        }
-        private async Task<String> execScriptHelperController(String script)
-        {
-            var x = await webView21Controller.ExecuteScriptAsync(script).ConfigureAwait(false);
+            var x = await webView21CreditsWebcamController.ExecuteScriptAsync(script).ConfigureAwait(false);
             return x;
         }
         public async void SetController(bool Controller1ButtonAPressed, bool Controller1ButtonBPressed, bool Controller1ButtonXPressed, bool Controller1ButtonYPressed, bool Controller1ButtonStartPressed, bool Controller1ButtonBackPressed, bool Controller1ButtonDownPressed, bool Controller1ButtonUpPressed, bool Controller1ButtonLeftPressed, bool Controller1ButtonRightPressed, bool Controller1ButtonShoulderLeftPressed, bool Controller1ButtonShoulderRightPressed, bool Controller1ThumbpadLeftPressed, bool Controller1ThumbpadRightPressed, double Controller1TriggerLeftPosition, double Controller1TriggerRightPosition, double Controller1ThumbLeftX, double Controller1ThumbLeftY, double Controller1ThumbRightX, double Controller1ThumbRightY)
@@ -427,7 +430,7 @@ namespace WebOverlay
                 {
                     List_XBOX.Add(0);
                 }
-                await execScriptHelperController($"setController('{Controller_A.ToString()}', '{Controller_B.ToString()}', '{Controller_X.ToString()}', '{Controller_Y.ToString()}', '{Controller_MAP.ToString()}', '{Controller_MENU.ToString()}', '{Controller_DD.ToString()}', '{Controller_DU.ToString()}', '{Controller_DL.ToString()}', '{Controller_DR.ToString()}', '{Controller_LB.ToString()}', '{Controller_RB.ToString()}', '{Controller_LSTICK.ToString()}', '{Controller_RSTICK.ToString()}', '{Controller_LT.ToString()}', '{Controller_RT.ToString()}', '{Controller_XBOX.ToString()}', '{Controller_LX.ToString()}', '{Controller_LY.ToString()}', '{Controller_RX.ToString()}', '{Controller_RY.ToString()}');");
+                await execScriptHelperCreditsWebcamController($"setController('{Controller_A.ToString()}', '{Controller_B.ToString()}', '{Controller_X.ToString()}', '{Controller_Y.ToString()}', '{Controller_MAP.ToString()}', '{Controller_MENU.ToString()}', '{Controller_DD.ToString()}', '{Controller_DU.ToString()}', '{Controller_DL.ToString()}', '{Controller_DR.ToString()}', '{Controller_LB.ToString()}', '{Controller_RB.ToString()}', '{Controller_LSTICK.ToString()}', '{Controller_RSTICK.ToString()}', '{Controller_LT.ToString()}', '{Controller_RT.ToString()}', '{Controller_XBOX.ToString()}', '{Controller_LX.ToString()}', '{Controller_LY.ToString()}', '{Controller_RX.ToString()}', '{Controller_RY.ToString()}');");
             }
             catch { }
         }
@@ -552,7 +555,7 @@ namespace WebOverlay
                 bmp = ImageToGrayScale(bmp);
                 byte[] imageArray = ImageToByteArray(bmp);
                 base64image = Convert.ToBase64String(imageArray);
-                await execScriptHelperCreditsWebcam($"setBackground('{base64image.ToString()}');");
+                await execScriptHelperCreditsWebcamController($"setBackground('{base64image.ToString()}');");
             }
             catch { }
         }
@@ -707,10 +710,10 @@ namespace WebOverlay
                             for (var i = 0; i < allelements.length; i++) {
                                 allelements[i].style.display = '';
                                 allelements[i].classList.remove('ytd-watch-flexy');
-                                allelements[i].style.width = '400px';
-                                allelements[i].style.height = '550px';
-                                allelements[i].style.minWidth = '400px';
-                                allelements[i].style.minHeight = '550px';
+                                allelements[i].style.width = '26vw';
+                                allelements[i].style.height = '64vh';
+                                allelements[i].style.minWidth = '26vw';
+                                allelements[i].style.minHeight = '64vh';
                                 allelements[i].style.padding = '0px';
                                 allelements[i].style.positionTop = '0px';
                                 allelements[i].style.positionLeft = '0px';
@@ -722,10 +725,10 @@ namespace WebOverlay
                             for (var i = 0; i < allelements.length; i++) {
                                 allelements[i].style.display = '';
                                 allelements[i].classList.remove('ytd-watch-flexy');
-                                allelements[i].style.width = '400px';
-                                allelements[i].style.height = '550px';
-                                allelements[i].style.minWidth = '400px';
-                                allelements[i].style.minHeight = '550px';
+                                allelements[i].style.width = '26vw';
+                                allelements[i].style.height = '64vh';
+                                allelements[i].style.minWidth = '26vw';
+                                allelements[i].style.minHeight = '64vh';
                                 allelements[i].style.padding = '0px';
                                 allelements[i].style.positionTop = '0px';
                                 allelements[i].style.positionLeft = '0px';
@@ -737,10 +740,10 @@ namespace WebOverlay
                             for (var i = 0; i < allelements.length; i++) {
                                 allelements[i].style.display = '';
                                 allelements[i].classList.remove('ytd-watch-flexy');
-                                allelements[i].style.width = '400px';
-                                allelements[i].style.height = '550px';
-                                allelements[i].style.minWidth = '400px';
-                                allelements[i].style.minHeight = '550px';
+                                allelements[i].style.width = '26vw';
+                                allelements[i].style.height = '64vh';
+                                allelements[i].style.minWidth = '26vw';
+                                allelements[i].style.minHeight = '64vh';
                                 allelements[i].style.padding = '0px';
                                 allelements[i].style.positionTop = '0px';
                                 allelements[i].style.positionLeft = '0px';
@@ -750,8 +753,8 @@ namespace WebOverlay
                         try {
                             var allelements = document.querySelectorAll('#secondary');
                             for (var i = 0; i < allelements.length; i++) {
-                                allelements[i].style.width = '400px';
-                                allelements[i].style.height = '550px';
+                                allelements[i].style.width = '26vw';
+                                allelements[i].style.height = '64vh';
                                 allelements[i].style.padding = '0px';
                                 allelements[i].style.positionTop = '0px';
                                 allelements[i].style.positionLeft = '0px';
@@ -761,8 +764,8 @@ namespace WebOverlay
                         try {
                             var allelements = document.querySelectorAll('#chat-container');
                             for (var i = 0; i < allelements.length; i++) {
-                                allelements[i].style.width = '400px';
-                                allelements[i].style.height = '550px';
+                                allelements[i].style.width = '26vw';
+                                allelements[i].style.height = '64vh';
                                 allelements[i].style.padding = '0px';
                                 allelements[i].style.positionTop = '0px';
                                 allelements[i].style.positionLeft = '0px';
@@ -792,22 +795,6 @@ namespace WebOverlay
                 await execScriptHelperChat(stringinject);
             }
             catch { }
-            try
-            {
-                string stringinject = @"
-                    var style = `<style>
-                        body, html {
-                            background-color: transparent !important;
-                        }
-                        * {
-                            background-color: black !important;
-                        }
-                    </style>`;
-                    document.getElementsByTagName('head')[0].innerHTML += style;
-                    ";
-                await execScriptHelperChat(stringinject);
-            }
-            catch { }
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -823,9 +810,8 @@ namespace WebOverlay
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            webView21CreditsWebcam.Dispose();
+            webView21CreditsWebcamController.Dispose();
             webView21Chat.Dispose();
-            webView21Controller.Dispose();
         }
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
