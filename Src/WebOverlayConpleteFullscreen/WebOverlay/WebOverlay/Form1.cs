@@ -192,6 +192,22 @@ namespace WebOverlay
             {
                 webView21Chat.ExecuteScriptAsync("getLoadPage('apikey', 'channelid');".Replace("apikey", apikey).Replace("channelid", channelid)).ConfigureAwait(false);
             }
+            try
+            {
+                string stringinject = @"
+                    var style = `<style>
+                        body, html {
+                            background-color: transparent !important;
+                        }
+                        * {
+                            background-color: transparent !important;
+                        }
+                    </style>`;
+                    document.getElementsByTagName('head')[0].innerHTML += style;
+                    ";
+                await execScriptHelperChat(stringinject);
+            }
+            catch { }
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
@@ -658,10 +674,10 @@ namespace WebOverlay
                             for (var i = 0; i < allelements.length; i++) {
                                 allelements[i].style.display = '';
                                 allelements[i].classList.remove('ytd-watch-flexy');
-                                allelements[i].style.width = '400px';
-                                allelements[i].style.height = '550px';
-                                allelements[i].style.minWidth = '400px';
-                                allelements[i].style.minHeight = '550px';
+                                allelements[i].style.width = '26vw';
+                                allelements[i].style.height = '64vh';
+                                allelements[i].style.minWidth = '26vw';
+                                allelements[i].style.minHeight = '64vh';
                                 allelements[i].style.padding = '0px';
                                 allelements[i].style.positionTop = '0px';
                                 allelements[i].style.positionLeft = '0px';
@@ -673,10 +689,10 @@ namespace WebOverlay
                             for (var i = 0; i < allelements.length; i++) {
                                 allelements[i].style.display = '';
                                 allelements[i].classList.remove('ytd-watch-flexy');
-                                allelements[i].style.width = '400px';
-                                allelements[i].style.height = '550px';
-                                allelements[i].style.minWidth = '400px';
-                                allelements[i].style.minHeight = '550px';
+                                allelements[i].style.width = '26vw';
+                                allelements[i].style.height = '64vh';
+                                allelements[i].style.minWidth = '26vw';
+                                allelements[i].style.minHeight = '64vh';
                                 allelements[i].style.padding = '0px';
                                 allelements[i].style.positionTop = '0px';
                                 allelements[i].style.positionLeft = '0px';
@@ -688,10 +704,10 @@ namespace WebOverlay
                             for (var i = 0; i < allelements.length; i++) {
                                 allelements[i].style.display = '';
                                 allelements[i].classList.remove('ytd-watch-flexy');
-                                allelements[i].style.width = '400px';
-                                allelements[i].style.height = '550px';
-                                allelements[i].style.minWidth = '400px';
-                                allelements[i].style.minHeight = '550px';
+                                allelements[i].style.width = '26vw';
+                                allelements[i].style.height = '64vh';
+                                allelements[i].style.minWidth = '26vw';
+                                allelements[i].style.minHeight = '64vh';
                                 allelements[i].style.padding = '0px';
                                 allelements[i].style.positionTop = '0px';
                                 allelements[i].style.positionLeft = '0px';
@@ -701,8 +717,8 @@ namespace WebOverlay
                         try {
                             var allelements = document.querySelectorAll('#secondary');
                             for (var i = 0; i < allelements.length; i++) {
-                                allelements[i].style.width = '400px';
-                                allelements[i].style.height = '550px';
+                                allelements[i].style.width = '26vw';
+                                allelements[i].style.height = '64vh';
                                 allelements[i].style.padding = '0px';
                                 allelements[i].style.positionTop = '0px';
                                 allelements[i].style.positionLeft = '0px';
@@ -712,8 +728,8 @@ namespace WebOverlay
                         try {
                             var allelements = document.querySelectorAll('#chat-container');
                             for (var i = 0; i < allelements.length; i++) {
-                                allelements[i].style.width = '400px';
-                                allelements[i].style.height = '550px';
+                                allelements[i].style.width = '26vw';
+                                allelements[i].style.height = '64vh';
                                 allelements[i].style.padding = '0px';
                                 allelements[i].style.positionTop = '0px';
                                 allelements[i].style.positionLeft = '0px';
@@ -739,22 +755,6 @@ namespace WebOverlay
                         }
                         catch { }
                     }
-                    ";
-                await execScriptHelperChat(stringinject);
-            }
-            catch { }
-            try
-            {
-                string stringinject = @"
-                    var style = `<style>
-                        body, html {
-                            background-color: transparent !important;
-                        }
-                        * {
-                            background-color: transparent !important;
-                        }
-                    </style>`;
-                    document.getElementsByTagName('head')[0].innerHTML += style;
                     ";
                 await execScriptHelperChat(stringinject);
             }
