@@ -239,9 +239,11 @@ namespace WebOverlay
             {
                 webView21Chat.ExecuteScriptAsync("getLoadPage('apikey', 'channelid');".Replace("apikey", apikey).Replace("channelid", channelid)).ConfigureAwait(false);
             }
-            try
+            if (File.Exists(Application.StartupPath + @"\WebOverlay.exe.WebView2\EBWebView\Local State"))
             {
-                string stringinject = @"
+                try
+                {
+                    string stringinject = @"
                     var style = `<style>
                         body, html {
                             background-color: transparent !important;
@@ -252,9 +254,10 @@ namespace WebOverlay
                     </style>`;
                     document.getElementsByTagName('head')[0].innerHTML += style;
                     ";
-                await execScriptHelperChat(stringinject);
+                    await execScriptHelperChat(stringinject);
+                }
+                catch { }
             }
-            catch { }
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
