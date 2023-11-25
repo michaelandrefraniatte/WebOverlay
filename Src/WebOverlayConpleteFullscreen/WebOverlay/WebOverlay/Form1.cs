@@ -177,7 +177,7 @@ namespace WebOverlay
             webView21Chat.NavigationCompleted += WebView21Chat_NavigationCompleted;
             this.Controls.Add(webView21Chat);
             webView21Chat.Focus();
-            if (File.Exists(Application.StartupPath + @"\WebOverlay.exe.WebView2\EBWebView\Local State"))
+            if (File.Exists(Application.StartupPath + @"\WebOverlay.exe.WebView2\EBWebView\Default\IndexedDB\https_www.youtube.com_0.indexeddb.leveldb/LOG.old"))
             {
                 await webView21CreditsWebcamController.EnsureCoreWebView2Async(environment);
                 webView21CreditsWebcamController.CoreWebView2.SetVirtualHostNameToFolderMapping("appassets", "assets", CoreWebView2HostResourceAccessKind.DenyCors);
@@ -217,7 +217,7 @@ namespace WebOverlay
             {
                 webView21Chat.ExecuteScriptAsync("getLoadPage('apikey', 'channelid');".Replace("apikey", apikey).Replace("channelid", channelid)).ConfigureAwait(false);
             }
-            if (File.Exists(Application.StartupPath + @"\WebOverlay.exe.WebView2\EBWebView\Local State"))
+            if (File.Exists(Application.StartupPath + @"\WebOverlay.exe.WebView2\EBWebView\Default\IndexedDB\https_www.youtube.com_0.indexeddb.leveldb/LOG.old"))
             {
                 try
                 {
@@ -553,7 +553,7 @@ namespace WebOverlay
         }
         private async void timer2_Tick(object sender, EventArgs e)
         {
-            if (File.Exists(Application.StartupPath + @"\WebOverlay.exe.WebView2\EBWebView\Local State"))
+            if (File.Exists(Application.StartupPath + @"\WebOverlay.exe.WebView2\EBWebView\Default\IndexedDB\https_www.youtube.com_0.indexeddb.leveldb/LOG.old"))
             {
                 try
                 {
