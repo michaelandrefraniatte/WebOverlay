@@ -14,7 +14,6 @@ C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlayConplete\WebOverlay\Web
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlayConplete\WebOverlay\WebOverlay\bin\Release\WebOverlay.exe
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlayConplete\WebOverlay\WebOverlay\bin\Release\WebOverlay.pdb
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlayConplete\WebOverlay\WebOverlay\obj\Release\WebOverlay.csproj.AssemblyReference.cache
-C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlayConplete\WebOverlay\WebOverlay\obj\Release\WebOverlay.csproj.SuggestedBindingRedirects.cache
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlayConplete\WebOverlay\WebOverlay\obj\Release\WebOverlay.Form1.resources
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlayConplete\WebOverlay\WebOverlay\obj\Release\WebOverlay.Properties.Resources.resources
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlayConplete\WebOverlay\WebOverlay\obj\Release\WebOverlay.csproj.GenerateResource.cache
