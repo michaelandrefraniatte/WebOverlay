@@ -3,6 +3,18 @@
 
 <head>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style>
+        body, html {
+            background: transparent;
+        }
+    </style>
+
     <style>
 
         html, body {
@@ -1091,7 +1103,7 @@
                                 listen_dev(
                                     window,
                                     "gamepadconnected",
-                                /*plugIn*/ ctx[4],
+                                    /*plugIn*/ ctx[4],
                                     false,
                                     false,
                                     false
@@ -1099,7 +1111,7 @@
                                 listen_dev(
                                     window,
                                     "gamepaddisconnected",
-                                /*unPlug*/ ctx[5],
+                                    /*unPlug*/ ctx[5],
                                     false,
                                     false,
                                     false
@@ -1298,9 +1310,9 @@
                                 let sx = side === "rt" ? -s : s;
 
                                 return `
-                transform: scaleX(${sx}) scaleY(${s}) rotate(-69deg);
-                opacity: ${0.3 + s};
-            `;
+                    transform: scaleX(${sx}) scaleY(${s}) rotate(-69deg);
+                    opacity: ${0.3 + s};
+                `;
                             })
                         );
                     }
