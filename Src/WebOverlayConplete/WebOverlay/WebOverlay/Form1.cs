@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using AForge.Video;
 using AForge.Video.DirectShow;
 using System.Drawing;
@@ -12,13 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
-using Newtonsoft.Json;
 using WebView2 = Microsoft.Web.WebView2.WinForms.WebView2;
 using System.IO;
 using SharpDX.XInput;
-using static System.Windows.Forms.AxHost;
 using System.Threading;
-using System.Security.Cryptography;
+using PromptHandle;
+using System.Diagnostics;
 
 namespace WebOverlay
 {
@@ -72,7 +69,7 @@ namespace WebOverlay
         private static int height = Screen.PrimaryScreen.Bounds.Height;
         private static string page;
         public static WebView2 webView21Chat = new WebView2();
-        private static string apikey, channelid, game;
+        private static string apikey, channelid, windowtitle;
         public static Image img;
         private FilterInfoCollection CaptureDevice;
         private VideoCaptureDevice FinalFrame;
@@ -147,9 +144,24 @@ namespace WebOverlay
                 file.ReadLine();
                 channelid = file.ReadLine();
                 file.ReadLine();
-                game = file.ReadLine();
+                windowtitle = file.ReadLine();
             }
+            List<string> listrecords = new List<string>();
+            listrecords = GetWindowTitles();
+            string record = windowtitle;
+            windowtitle = await Form2.ShowDialog("Window Titles", "What should be the window to handle capture?", record, listrecords);
             this.pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+        }
+        public List<string> GetWindowTitles()
+        {
+            List<string> titles = new List<string>();
+            foreach (Process proc in Process.GetProcesses())
+            {
+                string title = proc.MainWindowTitle;
+                if (title != null & title != "")
+                    titles.Add(title);
+            }
+            return titles;
         }
         private async void Start()
         {
@@ -240,7 +252,7 @@ namespace WebOverlay
             int py = 1;
             int lx = Screen.PrimaryScreen.Bounds.Width * 70 / 100;
             int ly = Screen.PrimaryScreen.Bounds.Width * 70 / 100 * 9 / 16;
-            WINDOW_NAME = game;
+            WINDOW_NAME = windowtitle;
             IntPtr window = FindWindowByCaption(IntPtr.Zero, WINDOW_NAME);
             SetWindowLong(window, GWL_STYLE, WS_SYSMENU);
             SetWindowPos(window, -2, px, py, lx, ly, 0x0040);
@@ -991,6 +1003,17 @@ namespace WebOverlay
                     FinalFrame.Stop();
             }
             catch { }
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("params.txt"))
+            {
+                file.WriteLine("// Page for credits and webcam and controller");
+                file.WriteLine(page);
+                file.WriteLine("// Youtube data API key");
+                file.WriteLine(apikey);
+                file.WriteLine("// Channel ID");
+                file.WriteLine(channelid);
+                file.WriteLine("// Game window title");
+                file.WriteLine(windowtitle);
+            }
         }
     }
     [ClassInterface(ClassInterfaceType.AutoDual)]
