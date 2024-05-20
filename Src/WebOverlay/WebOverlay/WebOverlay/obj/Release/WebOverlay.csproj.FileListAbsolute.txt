@@ -18,6 +18,6 @@ C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlay\WebOverlay\WebOverlay\
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlay\WebOverlay\WebOverlay\obj\Release\WebOverlay.Properties.Resources.resources
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlay\WebOverlay\WebOverlay\obj\Release\WebOverlay.csproj.GenerateResource.cache
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlay\WebOverlay\WebOverlay\obj\Release\WebOverlay.csproj.CoreCompileInputs.cache
-C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlay\WebOverlay\WebOverlay\obj\Release\WebOverlay.csproj.CopyComplete
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlay\WebOverlay\WebOverlay\obj\Release\WebOverlay.exe
 C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlay\WebOverlay\WebOverlay\obj\Release\WebOverlay.pdb
+C:\Users\micha\Documents\github\WebOverlay\Src\WebOverlay\WebOverlay\WebOverlay\obj\Release\WebOverlay.csproj.Up2Date

@@ -26,6 +26,8 @@ namespace WebOverlay
             InitializeComponent();
         }
         [DllImport("user32.dll")]
+        public static extern bool GetAsyncKeyState(Keys vKey);
+        [DllImport("user32.dll")]
         static extern bool SetForegroundWindow(IntPtr hWnd);
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
@@ -52,8 +54,6 @@ namespace WebOverlay
         private const uint WS_POPUP = 0x80000000;
         private const uint WS_TABSTOP = 0x00010000;
         private const uint WS_VISIBLE = 0x10000000;
-        [DllImport("user32.dll")]
-        public static extern bool GetAsyncKeyState(System.Windows.Forms.Keys vKey);
         [DllImport("winmm.dll", EntryPoint = "timeBeginPeriod")]
         public static extern uint TimeBeginPeriod(uint ms);
         [DllImport("winmm.dll", EntryPoint = "timeEndPeriod")]
@@ -106,9 +106,9 @@ namespace WebOverlay
         public static double Controller1ThumbLeftY;
         public static double Controller1ThumbRightX;
         public static double Controller1ThumbRightY;
-        public static int[] wd = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-        public static int[] wu = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-        public static bool[] ws = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
+        public static int[] wd = { 2, 2, 2 };
+        public static int[] wu = { 2, 2, 2 };
+        public static bool[] ws = { false, false, false };
         static void valchanged(int n, bool val)
         {
             if (val)
@@ -133,6 +133,7 @@ namespace WebOverlay
         {
             TimeBeginPeriod(1);
             NtSetTimerResolution(1, true, ref CurrentResolution);
+            Task.Run(() => StartWindowTitleRemover());
             this.Size = new Size(width, height);
             this.Location = new Point(0, 0);
             using (System.IO.StreamReader file = new System.IO.StreamReader("params.txt"))
@@ -151,6 +152,30 @@ namespace WebOverlay
             string record = windowtitle;
             windowtitle = await Form2.ShowDialog("Window Titles", "What should be the window to handle capture?", record, listrecords);
             this.pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+        }
+        private void StartWindowTitleRemover()
+        {
+            while (true)
+            {
+                valchanged(1, GetAsyncKeyState(Keys.PageDown));
+                if (wu[1] == 1)
+                {
+                    int width = Screen.PrimaryScreen.Bounds.Width;
+                    int height = Screen.PrimaryScreen.Bounds.Height;
+                    IntPtr window = GetForegroundWindow();
+                    SetWindowLong(window, GWL_STYLE, WS_SYSMENU);
+                    SetWindowPos(window, -2, 0, 0, width, height, 0x0040);
+                    DrawMenuBar(window);
+                }
+                valchanged(2, GetAsyncKeyState(Keys.PageUp));
+                if (wu[2] == 1)
+                {
+                    IntPtr window = GetForegroundWindow();
+                    SetWindowLong(window, GWL_STYLE, WS_CAPTION | WS_POPUP | WS_BORDER | WS_SYSMENU | WS_TABSTOP | WS_VISIBLE | WS_OVERLAPPED | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+                    DrawMenuBar(window);
+                }
+                System.Threading.Thread.Sleep(100);
+            }
         }
         public List<string> GetWindowTitles()
         {
